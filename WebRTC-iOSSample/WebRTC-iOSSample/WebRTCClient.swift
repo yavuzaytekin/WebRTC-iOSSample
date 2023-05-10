@@ -33,6 +33,7 @@ final class WebRTCClient: NSObject {
         super.init()
         configurePeerConnection()
         addAudioTrack()
+        configureAudioSession()
     }
     
     private func configurePeerConnection() {
@@ -48,20 +49,14 @@ final class WebRTCClient: NSObject {
     }
     
     private func createAudioTrack() -> RTCAudioTrack {
-        let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
-        let audioSource = WebRTCClient.factory.audioSource(with: constraints)
-        let audioTrack = WebRTCClient.factory.audioTrack(with: audioSource, trackId: "audio")
+        let audioTrack = WebRTCClient.factory.audioTrack(withTrackId: "audio")
         return audioTrack
     }
     
     private func configureAudioSession() {
         rtcAudioSession.lockForConfiguration()
-        do {
-            try rtcAudioSession.setCategory(AVAudioSession.Category.playAndRecord.rawValue)
-            try rtcAudioSession.setMode(AVAudioSession.Mode.voiceChat.rawValue)
-        } catch let error {
-            debugPrint("Error changing AVAudioSession category: \(error)")
-        }
+        try! rtcAudioSession.setCategory(AVAudioSession.Category.playAndRecord.rawValue)
+        try! rtcAudioSession.setMode(AVAudioSession.Mode.voiceChat.rawValue)
         rtcAudioSession.unlockForConfiguration()
     }
 }
